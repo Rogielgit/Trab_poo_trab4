@@ -133,10 +133,41 @@ public class Supermercado
 
 	public LinkedList<Usuario> carregaUsuarios()
 	{
-		LinkedList list = new LinkedList();
-		
-		/*Code*/
-		
+		LinkedList list = new LinkedList();		//???????
+		String arquivocsv = "Arquivos/Dados_usuarios.csv";
+		BufferedReader br = null;
+		String linha = "";
+		String separatorcsv = ",";		
+ 
+		try
+		{ 
+			br = new BufferedReader(new FileReader(arquivocsv));
+			while ((linha = br.readLine()) != null)
+			{	
+	        	String[] dadosUsuarios = linha.split(separatorcsv); // use comma as separator
+				this.cadastraUsuario(new Usuario(dadosUsuarios[0], dadosUsuarios[1],dadosUsuarios[2],dadosUsuarios[3],dadosUsuarios[4],dadosUsuarios[5]));
+
+			} 
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Erro: "+ ex.getMessage());
+		}
+		finally
+		{
+			if (br != null)
+			{
+				try
+				{
+					br.close();
+				}
+				catch (IOException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+	
 		return list;
 	}
 
@@ -144,8 +175,42 @@ public class Supermercado
 	{
 		LinkedList list = new LinkedList();
 		
-		/*Code*/
-		
+		String arquivocsv = "Arquivos/Dados_produtos.csv";
+		BufferedReader br = null;
+		String linha = "";
+		String separatorcsv = ",";
+
+		try
+		{ 
+			br = new BufferedReader(new FileReader(arquivocsv));
+			while ((linha = br.readLine()) != null)
+			{
+	        	String[] dadosProdutos = linha.split(separatorcsv); // use comma as separator
+    	    	//Verifica de que tipo e o usuario
+				this.cadastraProduto (new Produto(dadosProdutos[0], dadosProdutos[1],Double.parseDouble(dadosProdutos[2]),dadosProdutos[3],new GregorianCalendar (
+										Integer.parseInt(dadosProdutos[4]),Integer.parseInt(dadosProdutos[6]),Integer.parseInt(dadosProdutos[7])),
+										Double.parseDouble(dadosProdutos[8])));
+			} 
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Erro: "+ ex.getMessage());
+		}
+		finally
+		{
+			if (br != null)
+			{
+				try
+				{
+					br.close();
+				}
+				catch (IOException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+			
 		return list;
 	}
 
