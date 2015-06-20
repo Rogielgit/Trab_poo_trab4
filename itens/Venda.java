@@ -2,7 +2,7 @@ package itens;
 import java.util.*;
 import java.io.*;
 
-public class Venda
+public class Venda implements Serializable
 {
 	private GregorianCalendar dataDaVenda;
 	private String codigo; 	//identifica o produto

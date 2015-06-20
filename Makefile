@@ -1,14 +1,19 @@
-all: limpa serv client
-
-serv: limpa compServ execServ
-client: limpa compClient execClient
+all: limpa merc MainServidor MainCliente
+serv: compServ
+client: compClient
 limpa:
 	clear
 compServ:
-	javac SistemaServidor.java
+	javac sistemas//SistemaServidor.java
 execServ:
-	java SistemaServidor
+	java MainServidor
 compClient:
-	javac SistemaCliente.java
+	javac sistemas//SistemaCliente.java
 execClient:
 	java SistemaCliente
+MainServidor:
+	javac MainServidor.java
+MainCliente:
+	javac MainCliente.java
+merc:
+	javac mercado//Supermercado.java

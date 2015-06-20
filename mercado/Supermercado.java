@@ -34,7 +34,7 @@ public class Supermercado
 		this.listaProdutos.add(p);
 	}
 
-	public void cadastraUsuario(Usuario u) throws Exception
+	synchronized public void cadastraUsuario(Usuario u) throws Exception
 	{
 		String id = u.getID();
 		if(this.listaUsuarios
@@ -88,7 +88,7 @@ public class Supermercado
 			prod.setQuant(quant);
 	}
 
-	Produto buscaProduto(String codigo) throws Exception
+	public Produto buscaProduto(String codigo) throws Exception
 	{
 		Optional<Produto> opt =  this.listaProdutos
 			.stream()
@@ -98,25 +98,32 @@ public class Supermercado
 		return prod;
 	}
 
-	Usuario buscaUsuario(String id) throws Exception
+	public Usuario buscaUsuario(String id, String senha) throws Exception
 	{
 		Optional<Usuario> opt = this.listaUsuarios
 			.stream()
-			.filter( x -> x.getID().equals(id))
+			.filter( x -> x.getID().equals(id) && (x.getSenha().equals(senha)) )
 			.findAny();
-		Usuario usuario = opt.get();
-		return usuario;
+		try
+		{
+			Usuario usuario = opt.get();
+			return usuario;
+		}
+		catch (Exception e)
+		{
+			throw new Exception("Erro: id ou senha inválidos!");
+		}
 	}
 
-	synchronized public void realizarVenda(String codigo, String id, int quant) throws Exception
+	synchronized public void realizarVenda(String codigo, String id, String senha, int quant) throws Exception
 	{	
 		Produto prod = buscaProduto(codigo); 		//lança exceção se nao achar o produto ou usuario
-		Usuario usuario = buscaUsuario(id);
-		Venda v = new Venda(new GregorianCalendar(), codigo, id, quant);
+		Usuario usuario = buscaUsuario(id, senha);
 		if(quant < 0)
 			throw new Exception("Quantidade negativa!");
 		if(prod.getQuant() - quant < 0)
 			throw new Exception("Quantidade de produto indisponivel no momento!");
+		Venda v = new Venda(new GregorianCalendar(), codigo, id, quant);
 		this.listaVendas.add(v); 					 //adiciona venda na lista de vendas
 		prod.setQuant(prod.getQuant()-1);
 	}
@@ -133,7 +140,7 @@ public class Supermercado
 
 	public LinkedList<Usuario> carregaUsuarios()
 	{
-		LinkedList list = new LinkedList();		//???????
+		LinkedList<Usuario>list = new LinkedList();		//???????
 		String arquivocsv = "Arquivos/Dados_usuarios.csv";
 		BufferedReader br = null;
 		String linha = "";
@@ -145,7 +152,8 @@ public class Supermercado
 			while ((linha = br.readLine()) != null)
 			{	
 	        	String[] dadosUsuarios = linha.split(separatorcsv); // use comma as separator
-				this.cadastraUsuario(new Usuario(dadosUsuarios[0], dadosUsuarios[1],dadosUsuarios[2],dadosUsuarios[3],dadosUsuarios[4],dadosUsuarios[5]));
+				list.add(new Usuario(dadosUsuarios[0], dadosUsuarios[1],dadosUsuarios[2],dadosUsuarios[3],
+									dadosUsuarios[4],dadosUsuarios[5]));
 
 			} 
 		}
@@ -173,7 +181,7 @@ public class Supermercado
 
 	public LinkedList<Produto> carregaProdutos()
 	{
-		LinkedList list = new LinkedList();
+		LinkedList<Produto> list = new LinkedList();
 		
 		String arquivocsv = "Arquivos/Dados_produtos.csv";
 		BufferedReader br = null;
@@ -187,7 +195,7 @@ public class Supermercado
 			{
 	        	String[] dadosProdutos = linha.split(separatorcsv); // use comma as separator
     	    	//Verifica de que tipo e o usuario
-				this.cadastraProduto (new Produto(dadosProdutos[0], dadosProdutos[1],Double.parseDouble(dadosProdutos[2]),dadosProdutos[3],new GregorianCalendar (
+				list.add(new Produto(dadosProdutos[0], dadosProdutos[1],Double.parseDouble(dadosProdutos[2]),dadosProdutos[3],new GregorianCalendar (
 										Integer.parseInt(dadosProdutos[4]),Integer.parseInt(dadosProdutos[6]),Integer.parseInt(dadosProdutos[7])),
 										Double.parseDouble(dadosProdutos[8])));
 			} 
@@ -216,16 +224,54 @@ public class Supermercado
 
 	public LinkedList<Venda> carregaVendas()
 	{
-		LinkedList list = new LinkedList();
-		
-		/*Code*/
-		
+		LinkedList<Venda>list = new LinkedList();
+		String arquivocsv = "Arquivos/Dados_vendas.csv";
+		BufferedReader br = null;
+		String linha = "";
+		String separatorcsv = ",";
+
+		try
+		{ 
+			br = new BufferedReader(new FileReader(arquivocsv));
+			while ((linha = br.readLine()) != null)
+			{
+	        	String[] dadosVedas = linha.split(separatorcsv); // use comma as separator
+    	    	//Verifica de que tipo e o usuario
+				list.add(new Venda(new GregorianCalendar (Integer.parseInt(dadosVedas[0]),Integer.parseInt(dadosVedas[1]),Integer.parseInt(dadosVedas[2])),
+										dadosVedas[3],dadosVedas[4],Integer.parseInt(dadosVedas[5])));
+			} 
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Erro: "+ ex.getMessage());
+		}
+		finally
+		{
+			if (br != null)
+			{
+				try
+				{
+					br.close();
+				}
+				catch (IOException ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		}
+
 		return list;
 	}
+
 
 	public List<Venda> getVendas()
 	{
 		return this.listaVendas;
+	}
+
+	public List<Usuario> getListaDeUsuarios()
+	{
+		return this.listaUsuarios;
 	}
 }
 

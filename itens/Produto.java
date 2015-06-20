@@ -2,7 +2,7 @@ package itens;
 import java.util.*;
 import java.io.*;
 
-public class Produto
+public class Produto implements Serializable
 {
 	private String nome;
 	private String codigo;
@@ -18,7 +18,7 @@ public class Produto
 		this.fornecedor = fornec;
 		this.validade = val;
 		this.quantidade = quant;
-		this.codigo = codigo.replace(" ", "");;
+		this.codigo = codigo.replace(" ", "");
 	}
 
 	//Sets:

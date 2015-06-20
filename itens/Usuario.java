@@ -2,7 +2,7 @@ package itens;
 import java.util.*;
 import java.io.*;
 
-public class Usuario
+public class Usuario implements Serializable
 {
 	private String nome;
 	private String endereco;
@@ -25,6 +25,14 @@ public class Usuario
 	{
 		return this.id;
 	}
-
+	public String getSenha()
+	{
+		return this.senha;
+	}
+	public void print()
+	{
+		System.out.println(this.nome + this.email + " " + this.senha);
+		
+	}
 
 }
